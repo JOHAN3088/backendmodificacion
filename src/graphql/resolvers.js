@@ -19,29 +19,29 @@ export const resolvers = {
                 return null
             }
         },
-        ProyectoID(_, { id },context) {
+        ProyectoID(_, { id }, context) {
             if (context.user.auth) {
                 return Proyecto.findById(id);
             } else {
                 return null
-            }           
+            }
         },
-        ProyectoLider(_, { docLider },context) {
+        ProyectoLider(_, { docLider }, context) {
             if (context.user.auth) {
                 return Proyecto.find({ docLider })
             } else {
                 return null
-            }         
-            
+            }
+
         },
-        ProyectoByLideryEstado(_, { docLider, estadoProyecto },context) {
+        ProyectoByLideryEstado(_, { docLider, estadoProyecto }, context) {
             if (context.user.auth) {
-                return Proyecto.find({ docLider,estadoProyecto })
+                return Proyecto.find({ docLider, estadoProyecto })
             } else {
                 return null
-            }   
+            }
         },
-       
+
         Usuarios(_, agrs, context) {
             console.log(context)
             if (context.user.auth) {
@@ -50,12 +50,12 @@ export const resolvers = {
                 return null
             }
         },
-        UsuarioEstudiante(_, { rol },context) {
+        UsuarioEstudiante(_, { rol }, context) {
             if (context.user.auth) {
                 return Usuario.find({ rol })
             } else {
                 return null
-            }           
+            }
         },
         UsuarioEstudianteById(_, { id }, context) {
             console.log(context)
@@ -66,7 +66,7 @@ export const resolvers = {
             }
 
         },
-        async UsuarioEstado(_, { estadoUsuario },context) {
+        async UsuarioEstado(_, { estadoUsuario }, context) {
             if (context.user.auth) {
                 return Usuario.find({ estadoUsuario })
             } else {
@@ -81,19 +81,19 @@ export const resolvers = {
                 return null
             }
         },
-        GestionInscripcionByEst(_, { idEstudiante },context) {
+        GestionInscripcionByEst(_, { idEstudiante }, context) {
             if (context.user.auth) {
                 return GestionInscripcion.find({ idEstudiante })
             } else {
                 return null
-            }                    
+            }
         },
-        GestionInscripcionByEstadoIns(_, { estadoInscripcion },context) {
+        GestionInscripcionByEstadoIns(_, { estadoInscripcion }, context) {
             if (context.user.auth) {
                 return GestionInscripcion.find({ estadoInscripcion })
             } else {
                 return null
-            }                      
+            }
         },
         GestionAvances(_, agrs, context) {
             console.log(context)
@@ -103,14 +103,14 @@ export const resolvers = {
                 return null
             }
         },
-        GestionAvanceByidPro(_, { idProyecto },context) {
+        GestionAvanceByidPro(_, { idProyecto }, context) {
             if (context.user.auth) {
                 return GestionAvance.find({ idProyecto })
             } else {
                 return null
             }
-        },   
-    
+        },
+
         async Login(_, { correo, password }) {
             const usuario = await Usuario.findOne({
                 correo
@@ -128,12 +128,12 @@ export const resolvers = {
         }
     },
     Mutation: {
-        async AgregarProyecto(_, { proyecto },context) {
+        async AgregarProyecto(_, { proyecto }, context) {
             if (context.user.auth) {
                 const lider = await Usuario.findOne({
-                    documento : proyecto.docLider,                    
+                    documento: proyecto.docLider,
                 })
-                
+
                 if (!lider || proyecto.faseProyecto == "Terminado") {
                     return null
                 } else {
@@ -142,11 +142,11 @@ export const resolvers = {
                 }
             } else {
                 return null
-            }            
-           
+            }
+
         },
-        async AgregarUsuario(_, { usuario },context) {
-            
+        async AgregarUsuario(_, { usuario }, context) {
+
             if (context.user.auth) {
                 const salt = bcryp.genSaltSync();
                 const nUsuario = new Usuario({
@@ -160,8 +160,8 @@ export const resolvers = {
                 return await nUsuario.save();
             } else {
                 return null
-            }            
-            
+            }
+
         },
         async AgregarGestionInscripcion(_, { gestioninscripcion }) {
             const nInscripcion = new GestionInscripcion({
@@ -176,15 +176,18 @@ export const resolvers = {
 
             return await nInscripcion.save();
         },
-        async AgregarGestionAvance(_,{gestionavance}) {
-            const fase = await Proyecto.findOne({
-                nombre: gestionavance.nombre
-            })            
-            if (!fase || faseProyecto == "Terminado" ) {
+        async AgregarGestionAvance(_, { gestionavance }) {
+            console.log(gestionavance.idProyecto)
+            try {
+                const fase = await Proyecto.findById(gestionavance.idProyecto).exec();
+                if (fase) {
+                    const nAvance = new GestionAvance(gestionavance)
+                    return await nAvance.save()
+                }else{
+                    return null;
+                }
+            } catch (error) {
                 return null
-            } else {
-                const nAvance = new GestionAvance(gestionavance)
-                return await nAvance.save()
             }
         },
         async ActualizarUsuario(_, { usuario }) {
@@ -204,7 +207,7 @@ export const resolvers = {
             )
         },
         async ActualizarUsuarioEstado(_, { usuario }) {
-              return await Usuario.findByIdAndUpdate(
+            return await Usuario.findByIdAndUpdate(
                 usuario.id,
                 {
                     estadoUsuario: usuario.estadoUsuario
@@ -246,7 +249,7 @@ export const resolvers = {
             )
         },
         async ActualizarEstadoProyecto(_, { proyecto }) {
-                return await Proyecto.findByIdAndUpdate(
+            return await Proyecto.findByIdAndUpdate(
                 proyecto.id,
                 {
                     estadoProyecto: proyecto.estadoProyecto
@@ -255,7 +258,7 @@ export const resolvers = {
             }
             )
         },
-         
+
         async ActualizarEstadoInscripcion(_, { gestioninscripcion }) {
             return await GestionInscripcion.findByIdAndUpdate(
                 gestioninscripcion.id,
@@ -277,5 +280,5 @@ export const resolvers = {
         }
     }
 }
-                 
-    
+
+
