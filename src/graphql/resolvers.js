@@ -1,10 +1,10 @@
 // import { cursos } from "../data/cursos"
-import GestionAvance from "../models/GestionAvance";
-import GestionInscripcion from "../models/GestionInscripcion";
-import Proyecto from "../models/Proyecto";
-import Usuario from "../models/Usuario";
+import GestionAvance from "../models/GestionAvance.js";
+import GestionInscripcion from "../models/GestionInscripcion.js";
+import Proyecto from "../models/Proyecto.js";
+import Usuario from "../models/Usuario.js";
 import bcryp from "bcrypt";
-import { generarJwt } from "../helpers/jwt";
+import { generarJwt } from "../helpers/jwt.js";
 
 export const resolvers = {
     Query: {

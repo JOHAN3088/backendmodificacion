@@ -19,13 +19,15 @@
     "graphql": "^15.7.2",
     "graphql-tools": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.14",
-    "nodemon": "^2.0.15"
+    "mongoose": "^6.1.0",
+    "nodemon": "^2.0.15",
+    "utf8": "^3.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.16.0",
     "@babel/core": "^7.16.0",
     "@babel/node": "^7.16.0",
-    "@babel/preset-env": "^7.16.4"
+    "@babel/preset-env": "^7.16.4",
+    "babel-plugin-import": "^1.13.3"
   }
 }

@@ -1,8 +1,8 @@
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
-import schema from "./graphql/schema";
-import {dbConnection} from "./database/config"
-import { validarJwt } from "./middleware/validar-jwt";
+import schx from "./graphql/schema.js";
+import dbConnection from "./database/config.js";
+import validarJwt from "./middleware/validar-jwt.js";
 const app = express();
 
 
@@ -12,7 +12,7 @@ app.use(validarJwt)
 
 app.use("/graphql", graphqlHTTP((req)=>({
      graphiql : true,
-     schema : schema,
+     schema : schx,
      context :{
           user : req.user
      } 

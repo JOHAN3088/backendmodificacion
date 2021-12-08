@@ -1,4 +1,6 @@
-import {Schema, model} from "mongoose";
+import mongoose from "mongoose";
+const {Schema, model, isValidObjectId} = mongoose
+
 const UsuarioSchema= Schema({
     
     nombreCompleto: {type:String,required:true},

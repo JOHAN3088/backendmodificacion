@@ -1,5 +1,5 @@
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { resolvers } from "./resolvers";
+import { resolvers } from "./resolvers.js";
 // ProyectoYavances(nombre : String!) : [Proyecto, GestionAvance]
 const typeDefs = ` 
     type Query {
@@ -173,7 +173,9 @@ const typeDefs = `
 `; 
 
 
-export default makeExecutableSchema({
+const schx = makeExecutableSchema({
     typeDefs : typeDefs,
     resolvers : resolvers
 })
+
+export default schx;

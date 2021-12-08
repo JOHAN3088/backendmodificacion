@@ -1,4 +1,6 @@
-import {Schema, model, Mongoose} from "mongoose";
+import mongoose from "mongoose";
+const {Schema, model, isValidObjectId} = mongoose
+
 const ProyectoSchema= Schema({
     nombre: {type:String,required:true},
     objetivosGenerales: {type:String,required:true},

@@ -1,4 +1,6 @@
-import {Schema, model} from "mongoose";
+import mongoose from "mongoose";
+const {Schema, model, isValidObjectId} = mongoose
+
 const GestionInscripcionSchema= Schema({      
     idProyecto: {type:String,required:true},
     nombre: {type:String,required:true},

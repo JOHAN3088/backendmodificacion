@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken"
 
 
 const secret = "mi_llave"
-export const validarJwt = (req,res,next)=>{
+const validarJwt = (req,res,next)=>{
     let token =";"
     token  = req.headers["x-acces-token"] || req.headers["authorization"]
     if(!token){
@@ -24,3 +24,5 @@ export const validarJwt = (req,res,next)=>{
         return  next();
     }
 }
+
+export default validarJwt;
