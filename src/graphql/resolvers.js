@@ -129,6 +129,7 @@ export const resolvers = {
     },
     Mutation: {
         async AgregarProyecto(_, { proyecto }, context) {
+            
             if (context.user.auth) {
                 const lider = await Usuario.findOne({
                     documento: proyecto.docLider,
@@ -163,120 +164,170 @@ export const resolvers = {
             }
 
         },
-        async AgregarGestionInscripcion(_, { gestioninscripcion }) {
-            const nInscripcion = new GestionInscripcion({
-                idProyecto: gestioninscripcion.idProyecto,
-                nombre: gestioninscripcion.nombre,
-                idEstudiante: gestioninscripcion.idEstudiante,
-                nombreEstudiante: gestioninscripcion.nombreEstudiante,
-                estadoInscripcion: gestioninscripcion.estadoInscripcion,
-                fechaEgreso: gestioninscripcion.fechaEgreso,
-                fechaFinal: gestioninscripcion.fechaFinal
-            });
-
-            return await nInscripcion.save();
+        async AgregarGestionInscripcion(_, { gestioninscripcion },context) {
+            if (context.user.auth) {
+                try {
+                    const inscripcion = await Proyecto.findById(gestioninscripcion.idProyecto).exec();
+                    const estuid = await Usuario.findById(gestioninscripcion.idEstudiante).exec();
+                    const nInscripcion = new GestionInscripcion({
+                        idProyecto: gestioninscripcion.idProyecto,
+                        nombre: gestioninscripcion.nombre,
+                        idEstudiante: gestioninscripcion.idEstudiante,
+                        nombreEstudiante: gestioninscripcion.nombreEstudiante,
+                        estadoInscripcion: gestioninscripcion.estadoInscripcion,
+                        fechaEgreso: gestioninscripcion.fechaEgreso,
+                        fechaFinal: gestioninscripcion.fechaFinal
+                    });
+                    if(inscripcion && estuid ){    
+                    return await nInscripcion.save();
+                    }else{
+                        return null
+                    }
+                } catch (error) {
+                    return null
+                }
+            } else {
+                return null
+            }       
+            
         },
         async AgregarGestionAvance(_, { gestionavance }) {
-            console.log(gestionavance.idProyecto)
-            try {
-                const fase = await Proyecto.findById(gestionavance.idProyecto).exec();
-                if (fase) {
-                    const nAvance = new GestionAvance(gestionavance)
-                    return await nAvance.save()
-                }else{
-                    return null;
+            if (context.user.auth) {
+                try {
+                    const fase = await Proyecto.findById(gestionavance.idProyecto).exec();
+                    const usuid = await Usuario.findById(gestionavance.idUsuario).exec();
+                    if (fase && usuid) {
+                        const nAvance = new GestionAvance(gestionavance)
+                        return await nAvance.save()
+                    }else{
+                        return null;
+                    }
+                } catch (error) {
+                    return null
                 }
-            } catch (error) {
+            } else {
                 return null
-            }
+            }    
+           
         },
         async ActualizarUsuario(_, { usuario }) {
-            //    console.log("usuario", usuario)
-            //    const usr = await Usuario.findById(usuario.id)
-            //    console.log(usr)
-            return await Usuario.findByIdAndUpdate(
-                usuario.id,
-                {
-                    documento: usuario.documento,
-                    correo: usuario.correo,
-                    password: usuario.password,
-                    estadoUsuario: usuario.estadoUsuario
-                }, {
-                new: true
+            if (context.user.auth) {
+                return await Usuario.findByIdAndUpdate(
+                    usuario.id,
+                    {
+                        documento: usuario.documento,
+                        correo: usuario.correo,
+                        password: usuario.password,
+                        estadoUsuario: usuario.estadoUsuario
+                    }, {
+                    new: true
+                }
+                )
+            } else {
+                return null
             }
-            )
+            
         },
         async ActualizarUsuarioEstado(_, { usuario }) {
-            return await Usuario.findByIdAndUpdate(
-                usuario.id,
-                {
-                    estadoUsuario: usuario.estadoUsuario
-                }, {
-                new: true
+            if (context.user.auth) {
+                return await Usuario.findByIdAndUpdate(
+                    usuario.id,
+                    {
+                        estadoUsuario: usuario.estadoUsuario
+                    }, {
+                    new: true
+                }
+                )
+            } else {
+                return null
             }
-            )
+           
         },
         async ActualizarProyecto(_, { proyecto }) {
-
-            return await Proyecto.findByIdAndUpdate(
-                proyecto.id,
-                {
-                    nombre: proyecto.nombre,
-                    objetivosEspecificos: proyecto.objetivosEspecificos,
-                    objetivosGenerales: proyecto.objetivosGenerales,
-                    presupuesto: proyecto.presupuesto
-                }, {
-                new: true
+            if (context.user.auth) {
+                return await Proyecto.findByIdAndUpdate(
+                    proyecto.id,
+                    {
+                        nombre: proyecto.nombre,
+                        objetivosEspecificos: proyecto.objetivosEspecificos,
+                        objetivosGenerales: proyecto.objetivosGenerales,
+                        presupuesto: proyecto.presupuesto
+                    }, {
+                    new: true
+                }
+                )
+                
+            } else {
+                return null
             }
-            )
+            
         },
         async ActualizarProyectoFase(_, { proyecto }) {
-
-            if (proyecto.faseProyecto = "Terminado") {
-                proyecto.estadoProyecto = false
-
+            if (context.user.auth) {
+                if (proyecto.faseProyecto = "Terminado") {
+                    proyecto.estadoProyecto = false
+    
+                } else {
+                    proyecto.estadoProyecto = true
+                }
+                return await Proyecto.findByIdAndUpdate(
+                    proyecto.id,
+                    {
+                        faseProyecto: proyecto.faseProyecto,
+                        estadoProyecto: proyecto.estadoProyecto
+                    }, {
+                    new: true
+                }
+                )
             } else {
-                proyecto.estadoProyecto = true
-            }
-            return await Proyecto.findByIdAndUpdate(
-                proyecto.id,
-                {
-                    faseProyecto: proyecto.faseProyecto,
-                    estadoProyecto: proyecto.estadoProyecto
-                }, {
-                new: true
-            }
-            )
+                return null
+            }            
         },
         async ActualizarEstadoProyecto(_, { proyecto }) {
-            return await Proyecto.findByIdAndUpdate(
-                proyecto.id,
-                {
-                    estadoProyecto: proyecto.estadoProyecto
-                }, {
-                new: true
+            if (context.user.auth) {
+                return await Proyecto.findByIdAndUpdate(
+                    proyecto.id,
+                    {
+                        estadoProyecto: proyecto.estadoProyecto
+                    }, {
+                    new: true
+                }
+                )
+            } else {
+                return null
             }
-            )
+           
         },
 
         async ActualizarEstadoInscripcion(_, { gestioninscripcion }) {
-            return await GestionInscripcion.findByIdAndUpdate(
-                gestioninscripcion.id,
-                {
-                    estadoInscripcion: gestioninscripcion.estadoInscripcion
-                }, {
-                new: true
+            if (context.user.auth) {
+                return await GestionInscripcion.findByIdAndUpdate(
+                    gestioninscripcion.id,
+                    {
+                        estadoInscripcion: gestioninscripcion.estadoInscripcion
+                    }, {
+                    new: true
+                }
+                )
+            } else {
+                return null
             }
-            )
-        }, async ActualizarDescripcionAvance(_, { gestionAvances }) {
-            return await GestionAvance.findByIdAndUpdate(
-                gestionAvances.id,
-                {
-                    descripcionAvance: gestionAvances.descripcionAvance
-                }, {
-                new: true
+            
+        }, 
+        async ActualizarDescripcionAvance(_, { gestionAvances }) {
+            if (context.user.auth) {
+                return await GestionAvance.findByIdAndUpdate(
+                    gestionAvances.id,
+                    {
+                        descripcionAvance: gestionAvances.descripcionAvance
+                    }, {
+                    new: true
+                }
+                )
+            } else {
+                return null
             }
-            )
+            
         }
     }
 }
